@@ -109,8 +109,10 @@ class TabTwoMonth extends React.Component {
   reset = () => {
     const { setFieldsValue } = this.props.form;
     setFieldsValue({
-      userName: "",
+      // userName: "",
+      id: '',
       lastStartTime: null,
+      lastEndTime: null,
       startTime: null,
       endTime: null
     });

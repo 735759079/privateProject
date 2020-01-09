@@ -109,13 +109,15 @@ class TabOneMonth extends React.Component {
   };
 
   reset = () => {
-    const { setFieldsValue } = this.props.form;
-    setFieldsValue({
-      userName: "",
-      lastStartTime: null,
-      startTime: null,
-      endTime: null
-    });
+    const { setFieldsValue,resetFields } = this.props.form;
+    // setFieldsValue({
+    //   id: "",
+    //   lastStartTime: null,
+    //   lastEndTime: null,
+    //   cycle: '',
+    //   menstrual: ''
+    // });
+    resetFields();
   };
 
   change = (value, option) => {

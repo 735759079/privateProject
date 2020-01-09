@@ -307,9 +307,9 @@ export default class TableContainer extends React.Component {
                     <span
                       className={
                         this.state.menstrual_min || this.state.menstrual_max
-                          ? record.menstrualArr[0] >=
+                          ? record.menstrualArr[1] >=
                               this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                            record.menstrualArr[1] <= this.state.menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -341,9 +341,9 @@ export default class TableContainer extends React.Component {
                     <span
                       className={
                         this.state.menstrual_min || this.state.menstrual_max
-                          ? record.menstrualArr[0] >=
+                          ? record.menstrualArr[2] >=
                               this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                            record.menstrualArr[2] <= this.state.menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -375,9 +375,9 @@ export default class TableContainer extends React.Component {
                     <span
                       className={
                         this.state.menstrual_min || this.state.menstrual_max
-                          ? record.menstrualArr[0] >=
+                          ? record.menstrualArr[3] >=
                               this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                            record.menstrualArr[3] <= this.state.menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -409,9 +409,9 @@ export default class TableContainer extends React.Component {
                     <span
                       className={
                         this.state.menstrual_min || this.state.menstrual_max
-                          ? record.menstrualArr[0] >=
+                          ? record.menstrualArr[4] >=
                               this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                            record.menstrualArr[4] <= this.state.menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -443,9 +443,9 @@ export default class TableContainer extends React.Component {
                     <span
                       className={
                         this.state.menstrual_min || this.state.menstrual_max
-                          ? record.menstrualArr[0] >=
+                          ? record.menstrualArr[5] >=
                               this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                            record.menstrualArr[5] <= this.state.menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -477,9 +477,9 @@ export default class TableContainer extends React.Component {
                     <span
                       className={
                         this.state.menstrual_min || this.state.menstrual_max
-                          ? record.menstrualArr[0] >=
+                          ? record.menstrualArr[6] >=
                               this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                            record.menstrualArr[6] <= this.state.menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
