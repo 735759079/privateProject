@@ -511,7 +511,7 @@ export default class TableContainer extends React.Component {
               data.forEach(item => {
                 sum += item;
               });
-              return Math.round(sum / data.length) + "天";
+              return data.length ? Math.round(sum / data.length) + "天" : "无";
             }}
           />
           <Column
@@ -520,22 +520,26 @@ export default class TableContainer extends React.Component {
             key="next_date"
             width={200}
             render={(text, record) => {
-              if (
-                moment(text).diff(moment(), "days") < 3 &&
-                moment(text).diff(moment(), "days") >= 0
-              ) {
-                return <span style={{ color: "red" }}>{text}</span>;
-              } else if (moment(text).diff(moment(), "days") < 0) {
-                return (
-                  <span>
-                    {text}
-                    <Tag color="red" style={{ marginLeft: "20px" }}>
-                      已失效
-                    </Tag>
-                  </span>
-                );
-              } else {
+              if (text === "无") {
                 return <span>{text}</span>;
+              } else {
+                if (
+                  moment(text).diff(moment(), "days") < 3 &&
+                  moment(text).diff(moment(), "days") >= 0
+                ) {
+                  return <span style={{ color: "red" }}>{text}</span>;
+                } else if (moment(text).diff(moment(), "days") < 0) {
+                  return (
+                    <span>
+                      {text}
+                      <Tag color="red" style={{ marginLeft: "20px" }}>
+                        已失效
+                      </Tag>
+                    </span>
+                  );
+                } else {
+                  return <span>{text}</span>;
+                }
               }
             }}
           />

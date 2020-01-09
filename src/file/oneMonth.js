@@ -24,7 +24,7 @@ class TabOneMonth extends React.Component {
       getFieldValue,
       getFieldsValue,
       validateFields,
-      setFieldsValue
+      resetFields
     } = this.props.form;
     validateFields();
     if (
@@ -41,74 +41,70 @@ class TabOneMonth extends React.Component {
 
       console.log(getFieldsValue())
 
-      // if (existData.length) {
-      //   const monthIndex = parseInt(getFieldValue("times")) - 1;
-      //   const startTime = getFieldValue("startTime");
-      //   const endTime = getFieldValue("endTime");
-      //   const lastStartTime = getFieldValue("lastStartTime");
-      //   const lastEndTime = getFieldValue("lastEndTime");
-      //   const data = this.props.data;
+      if (existData.length) {
+        const monthIndex = parseInt(getFieldValue("times")) - 1;
+        // const startTime = getFieldValue("startTime");
+        // const endTime = getFieldValue("endTime");
+        const lastStartTime = getFieldValue("lastStartTime");
+        const lastEndTime = getFieldValue("lastEndTime");
+        const data = this.props.data;
 
-      //   existData[0].cycleArr[monthIndex] = moment(startTime).diff(
-      //     moment(lastStartTime),
-      //     "days"
-      //   );
-      //   existData[0].menstrualArr[monthIndex] =
-      //     moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+        // existData[0].cycleArr[monthIndex] = moment(startTime).diff(
+        //   moment(lastStartTime),
+        //   "days"
+        // );
+        existData[0].menstrualArr[monthIndex] =
+          moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
 
-      //   existData[0].nextDate = moment(startTime)
-      //     .add(existData[0].cycleArr[monthIndex], "days")
-      //     .format("YYYY-MM-DD");
-      //   data[existData[1]] = existData[0];
+        existData[0].nextDate = getFieldValue("cycle") ? moment(lastStartTime)
+          .add(parseInt(getFieldValue("cycle")), "days")
+          .format("YYYY-MM-DD") : '无';
+        data[existData[1]] = existData[0];
 
-      //   const newData = [].concat(data);
+        const newData = [].concat(data);
 
-      //   this.renderDataCallback(newData);
-      //   localStorage.setItem("peopleData", JSON.stringify(newData));
-      //   setFieldsValue({
-      //     lastStartTime: startTime,
-      //     lastEndTime: endTime,
-      //     startTime: null,
-      //     endTime: null
-      //   });
-      // } else {
-      //   const cycleArr = [0, 0, 0, 0, 0, 0, 0];
-      //   const menstrualArr = [0, 0, 0, 0, 0, 0, 0];
-      //   const monthIndex = parseInt(getFieldValue("times")) - 1;
+        this.props.renderDataCallback(newData);
+        localStorage.setItem("peopleData", JSON.stringify(newData));
+        this.setState({
+          menstrualTime: ''
+        })
+        resetFields();
+      } else {
+        const cycleArr = [0, 0, 0, 0, 0, 0, 0];
+        const menstrualArr = [0, 0, 0, 0, 0, 0, 0];
+        const monthIndex = parseInt(getFieldValue("times")) - 1;
 
-      //   const startTime = getFieldValue("startTime");
-      //   const endTime = getFieldValue("endTime");
-      //   const lastStartTime = getFieldValue("lastStartTime");
-      //   const lastEndTime = getFieldValue("lastEndTime");
+        // const startTime = getFieldValue("startTime");
+        // const endTime = getFieldValue("endTime");
+        const lastStartTime = getFieldValue("lastStartTime");
+        const lastEndTime = getFieldValue("lastEndTime");
 
-      //   cycleArr[monthIndex] = moment(startTime).diff(
-      //     moment(lastStartTime),
-      //     "days"
-      //   );
-      //   menstrualArr[monthIndex] =
-      //     moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+        // cycleArr[monthIndex] = moment(startTime).diff(
+        //   moment(lastStartTime),
+        //   "days"
+        // );
+        menstrualArr[monthIndex] =
+          moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
 
-      //   const newData = this.props.data.concat([
-      //     {
-      //       id: getFieldValue("id"),
-      //       userName: getFieldValue("userName"),
-      //       cycleArr: cycleArr,
-      //       menstrualArr: menstrualArr,
-      //       nextDate: moment(startTime)
-      //         .add(cycleArr[monthIndex], "days")
-      //         .format("YYYY-MM-DD")
-      //     }
-      //   ]);
+        const newData = this.props.data.concat([
+          {
+            id: getFieldValue("id"),
+            userName: getFieldValue("userName"),
+            cycleArr: cycleArr,
+            menstrualArr: menstrualArr,
+            nextDate: getFieldValue("cycle") ? moment(lastStartTime)
+              .add(parseInt(getFieldValue("cycle")), "days")
+              .format("YYYY-MM-DD") : '无'
+          }
+        ]);
 
-      //   this.renderDataCallback(newData);
-      //   localStorage.setItem("peopleData", JSON.stringify(newData));
-      //   setFieldsValue({
-      //     lastStartTime: startTime,
-      //     lastEndTime: endTime,
-      //     startTime: null,
-      //     endTime: null
-      //   });
-      // }
+        this.props.renderDataCallback(newData);
+        localStorage.setItem("peopleData", JSON.stringify(newData));
+        this.setState({
+          menstrualTime: ''
+        })
+        resetFields();
+      }
     }
   };
 
@@ -188,13 +184,15 @@ class TabOneMonth extends React.Component {
             </Form.Item>
           </div>
           <div style={{ width: "33%" }}>
-            {this.state.select !== '4次' ? <Form.Item label="请输入周期">
+            <Form.Item label="请输入周期">
               {getFieldDecorator("cycle")(
                 <Input placeholder="请输入周期" style={{ width: "250px" }} />
               )}
-            </Form.Item>:null}
+            </Form.Item>
             <Form.Item label="请输入经期">
-              {getFieldDecorator("menstrual")(
+              {getFieldDecorator("menstrual",{
+                initialValue: this.state.menstrualTime
+              })(
                 <Input placeholder="请输入经期" style={{ width: "250px" }} onChange={this.changeMenstrual}/>
               )}
             </Form.Item>
@@ -218,8 +216,8 @@ class TabOneMonth extends React.Component {
                     message: "Please select the end time of last month!"
                   }
                 ],
-                initialValue: this.state.lastStartTime && this.state.menstrualTime ? moment(this.state.lastStartTime).add(this.state.menstrualTime,'days') : null
-              })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
+                initialValue: this.state.lastStartTime && this.state.menstrualTime ? moment(this.state.lastStartTime).add(parseInt(this.state.menstrualTime)-1,'days') : null
+              })(<DatePicker disabled={this.state.menstrualTime ? true :false} format={dateFormat} style={{ width: "250px" }} />)}
             </Form.Item>
           </div>
           {/* <div style={{ width: "33%" }}>

@@ -57,7 +57,7 @@ class TabTwoMonth extends React.Component {
 
         const newData = [].concat(data);
 
-        this.renderDataCallback(newData);
+        this.props.renderDataCallback(newData);
         localStorage.setItem("peopleData", JSON.stringify(newData));
         setFieldsValue({
           lastStartTime: startTime,
@@ -94,7 +94,7 @@ class TabTwoMonth extends React.Component {
           }
         ]);
 
-        this.renderDataCallback(newData);
+        this.props.renderDataCallback(newData);
         localStorage.setItem("peopleData", JSON.stringify(newData));
         setFieldsValue({
           lastStartTime: startTime,
