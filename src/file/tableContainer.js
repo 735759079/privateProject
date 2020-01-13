@@ -90,7 +90,7 @@ export default class TableContainer extends React.Component {
           />
           <ColumnGroup title="周期">
             <Column
-              title="-3--2"
+              title="-3~2"
               key="cycle_1"
               width={60}
               align="center"

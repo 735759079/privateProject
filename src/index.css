@@ -40,13 +40,13 @@ code {
   text-align: center;
 }
 
-.menstrualNormal{
+.menstrualNormal {
   display: inline-block;
   width: 28px;
   text-align: center;
 }
 
-.menstrualAlert{
+.menstrualAlert {
   background-color: yellow;
   display: inline-block;
   width: 28px;
