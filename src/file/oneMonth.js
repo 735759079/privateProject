@@ -13,8 +13,8 @@ class TabOneMonth extends React.Component {
     super(props);
     this.state = {
       select: "-3次",
-      lastStartTime: '',
-      menstrualTime:''
+      lastStartTime: "",
+      menstrualTime: ""
     };
   }
 
@@ -39,26 +39,31 @@ class TabOneMonth extends React.Component {
         }
       });
 
-      console.log(getFieldsValue())
+      console.log(getFieldsValue());
 
       if (existData.length) {
         const monthIndex = parseInt(getFieldValue("times")) - 1;
-        // const startTime = getFieldValue("startTime");
-        // const endTime = getFieldValue("endTime");
         const lastStartTime = getFieldValue("lastStartTime");
         const lastEndTime = getFieldValue("lastEndTime");
         const data = this.props.data;
 
-        // existData[0].cycleArr[monthIndex] = moment(startTime).diff(
-        //   moment(lastStartTime),
-        //   "days"
-        // );
+        // 更新存储经期
         existData[0].menstrualArr[monthIndex] =
           moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
 
-        existData[0].nextDate = getFieldValue("cycle") ? moment(lastStartTime)
-          .add(parseInt(getFieldValue("cycle")), "days")
-          .format("YYYY-MM-DD") : '无';
+        // 更新存储时间
+        existData[0].startTimeArr[monthIndex] = lastStartTime.format(
+          "YYYY-MM-DD"
+        );
+        existData[0].endTimeArr[monthIndex] = lastEndTime.format("YYYY-MM-DD");
+
+        // 更新预计时间
+        existData[0].nextDate = getFieldValue("cycle")
+          ? moment(lastStartTime)
+              .add(parseInt(getFieldValue("cycle")), "days")
+              .format("YYYY-MM-DD")
+          : "无";
+
         data[existData[1]] = existData[0];
 
         const newData = [].concat(data);
@@ -66,25 +71,26 @@ class TabOneMonth extends React.Component {
         this.props.renderDataCallback(newData);
         localStorage.setItem("peopleData", JSON.stringify(newData));
         this.setState({
-          menstrualTime: ''
-        })
+          menstrualTime: ""
+        });
         resetFields();
       } else {
         const cycleArr = [0, 0, 0, 0, 0, 0, 0];
         const menstrualArr = [0, 0, 0, 0, 0, 0, 0];
+        const startTimeArr = [0, 0, 0, 0, 0, 0, 0, 0];
+        const endTimeArr = [0, 0, 0, 0, 0, 0, 0, 0];
         const monthIndex = parseInt(getFieldValue("times")) - 1;
 
-        // const startTime = getFieldValue("startTime");
-        // const endTime = getFieldValue("endTime");
         const lastStartTime = getFieldValue("lastStartTime");
         const lastEndTime = getFieldValue("lastEndTime");
 
-        // cycleArr[monthIndex] = moment(startTime).diff(
-        //   moment(lastStartTime),
-        //   "days"
-        // );
+        // 存储经期
         menstrualArr[monthIndex] =
           moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+
+        // 存储每次输入的时间
+        startTimeArr[monthIndex] = lastStartTime.format("YYYY-MM-DD");
+        endTimeArr[monthIndex] = lastEndTime.format("YYYY-MM-DD");
 
         const newData = this.props.data.concat([
           {
@@ -92,24 +98,28 @@ class TabOneMonth extends React.Component {
             userName: getFieldValue("userName"),
             cycleArr: cycleArr,
             menstrualArr: menstrualArr,
-            nextDate: getFieldValue("cycle") ? moment(lastStartTime)
-              .add(parseInt(getFieldValue("cycle")), "days")
-              .format("YYYY-MM-DD") : '无'
+            nextDate: getFieldValue("cycle")
+              ? moment(lastStartTime)
+                  .add(parseInt(getFieldValue("cycle")), "days")
+                  .format("YYYY-MM-DD")
+              : "无",
+            startTimeArr: startTimeArr,
+            endTimeArr: endTimeArr
           }
         ]);
 
         this.props.renderDataCallback(newData);
         localStorage.setItem("peopleData", JSON.stringify(newData));
         this.setState({
-          menstrualTime: ''
-        })
+          menstrualTime: ""
+        });
         resetFields();
       }
     }
   };
 
   reset = () => {
-    const { setFieldsValue,resetFields } = this.props.form;
+    const { resetFields } = this.props.form;
     // setFieldsValue({
     //   id: "",
     //   lastStartTime: null,
@@ -127,17 +137,17 @@ class TabOneMonth extends React.Component {
     });
   };
 
-  selectStartTime=(date)=>{
+  selectStartTime = date => {
     this.setState({
-      lastStartTime:date
-    })
-  }
+      lastStartTime: date
+    });
+  };
 
-  changeMenstrual=(e)=>{
+  changeMenstrual = e => {
     this.setState({
-      menstrualTime:e.currentTarget.value
-    })
-  }
+      menstrualTime: e.currentTarget.value
+    });
+  };
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -192,10 +202,14 @@ class TabOneMonth extends React.Component {
               )}
             </Form.Item>
             <Form.Item label="请输入经期">
-              {getFieldDecorator("menstrual",{
+              {getFieldDecorator("menstrual", {
                 initialValue: this.state.menstrualTime
               })(
-                <Input placeholder="请输入经期" style={{ width: "250px" }} onChange={this.changeMenstrual}/>
+                <Input
+                  placeholder="请输入经期"
+                  style={{ width: "250px" }}
+                  onChange={this.changeMenstrual}
+                />
               )}
             </Form.Item>
           </div>
@@ -208,7 +222,13 @@ class TabOneMonth extends React.Component {
                     message: "Please select the start time of last month!"
                   }
                 ]
-              })(<DatePicker format={dateFormat} style={{ width: "250px" }} onChange={this.selectStartTime}/>)}
+              })(
+                <DatePicker
+                  format={dateFormat}
+                  style={{ width: "250px" }}
+                  onChange={this.selectStartTime}
+                />
+              )}
             </Form.Item>
             <Form.Item label={`${this.state.select}月经结束时间`}>
               {getFieldDecorator("lastEndTime", {
@@ -218,32 +238,22 @@ class TabOneMonth extends React.Component {
                     message: "Please select the end time of last month!"
                   }
                 ],
-                initialValue: this.state.lastStartTime && this.state.menstrualTime ? moment(this.state.lastStartTime).add(parseInt(this.state.menstrualTime)-1,'days') : null
-              })(<DatePicker disabled={this.state.menstrualTime ? true :false} format={dateFormat} style={{ width: "250px" }} />)}
+                initialValue:
+                  this.state.lastStartTime && this.state.menstrualTime
+                    ? moment(this.state.lastStartTime).add(
+                        parseInt(this.state.menstrualTime) - 1,
+                        "days"
+                      )
+                    : null
+              })(
+                <DatePicker
+                  disabled
+                  format={dateFormat}
+                  style={{ width: "250px" }}
+                />
+              )}
             </Form.Item>
           </div>
-          {/* <div style={{ width: "33%" }}>
-            <Form.Item label="下次月经开始时间">
-              {getFieldDecorator("startTime", {
-                rules: [
-                  {
-                    required: true,
-                    message: "Please select the start time of this month!"
-                  }
-                ]
-              })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
-            </Form.Item>
-            <Form.Item label="下次月经结束时间">
-              {getFieldDecorator("endTime", {
-                rules: [
-                  {
-                    required: true,
-                    message: "Please select the end time of last month!"
-                  }
-                ]
-              })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
-            </Form.Item>
-          </div> */}
         </Form>
 
         <div className="tabBtn">

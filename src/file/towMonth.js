@@ -12,7 +12,8 @@ class TabTwoMonth extends React.Component {
     super(props);
     this.state = {
       select: "-3次",
-      valueSelect: "01"
+      valueSelect: "01",
+      existId: [false, -1]
     };
   }
 
@@ -20,8 +21,7 @@ class TabTwoMonth extends React.Component {
     const {
       getFieldsError,
       getFieldValue,
-      validateFields,
-      setFieldsValue
+      validateFields
     } = this.props.form;
     validateFields();
     if (
@@ -45,12 +45,22 @@ class TabTwoMonth extends React.Component {
         const lastEndTime = getFieldValue("lastEndTime");
         const data = this.props.data;
 
-        existData[0].cycleArr[monthIndex] = moment(startTime).diff(
-          moment(lastStartTime),
-          "days"
-        );
-        existData[0].menstrualArr[monthIndex] =
-          moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+        if (monthIndex === 6) {
+          // 更新经期
+          existData[0].menstrualArr[monthIndex] =
+            moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+        } else {
+          // 更新周期
+          existData[0].cycleArr[monthIndex] = moment(startTime).diff(
+            moment(lastStartTime),
+            "days"
+          );
+          // 更新经期
+          existData[0].menstrualArr[monthIndex] =
+            moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+          existData[0].menstrualArr[monthIndex + 1] =
+            moment(endTime).diff(moment(startTime), "days") + 1;
+        }
 
         existData[0].startTimeArr[monthIndex] = lastStartTime.format(
           "YYYY-MM-DD"
@@ -70,14 +80,8 @@ class TabTwoMonth extends React.Component {
 
         this.props.renderDataCallback(newData);
         localStorage.setItem("peopleData", JSON.stringify(newData));
-        // setFieldsValue({
-        //   lastStartTime: startTime,
-        //   lastEndTime: endTime,
-        //   startTime: null,
-        //   endTime: null
-        // });
       } else {
-        const cycleArr = [0, 0, 0, 0, 0, 0, 0];
+        const cycleArr = [0, 0, 0, 0, 0, 0];
         const menstrualArr = [0, 0, 0, 0, 0, 0, 0];
         const startTimeArr = [0, 0, 0, 0, 0, 0, 0, 0];
         const endTimeArr = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -88,12 +92,22 @@ class TabTwoMonth extends React.Component {
         const lastStartTime = getFieldValue("lastStartTime");
         const lastEndTime = getFieldValue("lastEndTime");
 
-        cycleArr[monthIndex] = moment(startTime).diff(
-          moment(lastStartTime),
-          "days"
-        );
-        menstrualArr[monthIndex] =
-          moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+        if (monthIndex === 6) {
+          // 存储经期
+          menstrualArr[monthIndex] =
+            moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+        } else {
+          // 存储周期
+          cycleArr[monthIndex] = moment(startTime).diff(
+            moment(lastStartTime),
+            "days"
+          );
+          // 存储经期
+          menstrualArr[monthIndex] =
+            moment(lastEndTime).diff(moment(lastStartTime), "days") + 1;
+          menstrualArr[monthIndex + 1] =
+            moment(endTime).diff(moment(startTime), "days") + 1;
+        }
 
         // 存储每次输入的时间
         startTimeArr[monthIndex] = lastStartTime.format("YYYY-MM-DD");
@@ -118,12 +132,6 @@ class TabTwoMonth extends React.Component {
 
         this.props.renderDataCallback(newData);
         localStorage.setItem("peopleData", JSON.stringify(newData));
-        // setFieldsValue({
-        //   lastStartTime: startTime,
-        //   lastEndTime: endTime,
-        //   startTime: null,
-        //   endTime: null
-        // });
       }
     }
   };
@@ -131,7 +139,6 @@ class TabTwoMonth extends React.Component {
   reset = () => {
     const { setFieldsValue } = this.props.form;
     setFieldsValue({
-      // userName: "",
       id: "",
       lastStartTime: null,
       lastEndTime: null,
@@ -147,9 +154,17 @@ class TabTwoMonth extends React.Component {
     });
   };
 
-  queryId = value => {
+  queryId = () => {
+    const { getFieldValue } = this.props.form;
+    const existId = [];
+    this.props.data.forEach((item, index) => {
+      if (item.id === getFieldValue("id")) {
+        existId[0] = true;
+        existId[1] = index;
+      }
+    });
     this.setState({
-      queryId: value
+      existId: [].concat(existId)
     });
   };
 
@@ -228,7 +243,18 @@ class TabTwoMonth extends React.Component {
                     required: true,
                     message: "Please select the start time of last month!"
                   }
-                ]
+                ],
+                initialValue: this.state.existId[0]
+                  ? this.props.data[this.state.existId[1]].startTimeArr[
+                      parseInt(this.state.valueSelect) - 1
+                    ]
+                    ? moment(
+                        this.props.data[this.state.existId[1]].startTimeArr[
+                          parseInt(this.state.valueSelect) - 1
+                        ]
+                      )
+                    : null
+                  : null
               })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
             </Form.Item>
             <Form.Item label={`${this.state.select}月经结束时间`}>
@@ -238,7 +264,18 @@ class TabTwoMonth extends React.Component {
                     required: true,
                     message: "Please select the end time of last month!"
                   }
-                ]
+                ],
+                initialValue: this.state.existId[0]
+                  ? this.props.data[this.state.existId[1]].endTimeArr[
+                      parseInt(this.state.valueSelect) - 1
+                    ]
+                    ? moment(
+                        this.props.data[this.state.existId[1]].endTimeArr[
+                          parseInt(this.state.valueSelect) - 1
+                        ]
+                      )
+                    : null
+                  : null
               })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
             </Form.Item>
           </div>
@@ -250,7 +287,18 @@ class TabTwoMonth extends React.Component {
                     required: true,
                     message: "Please select the start time of this month!"
                   }
-                ]
+                ],
+                initialValue: this.state.existId[0]
+                  ? this.props.data[this.state.existId[1]].startTimeArr[
+                      parseInt(this.state.valueSelect)
+                    ]
+                    ? moment(
+                        this.props.data[this.state.existId[1]].startTimeArr[
+                          parseInt(this.state.valueSelect)
+                        ]
+                      )
+                    : null
+                  : null
               })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
             </Form.Item>
             <Form.Item label="下次月经结束时间">
@@ -260,7 +308,18 @@ class TabTwoMonth extends React.Component {
                     required: true,
                     message: "Please select the end time of this month!"
                   }
-                ]
+                ],
+                initialValue: this.state.existId[0]
+                  ? this.props.data[this.state.existId[1]].endTimeArr[
+                      parseInt(this.state.valueSelect)
+                    ]
+                    ? moment(
+                        this.props.data[this.state.existId[1]].endTimeArr[
+                          parseInt(this.state.valueSelect)
+                        ]
+                      )
+                    : null
+                  : null
               })(<DatePicker format={dateFormat} style={{ width: "250px" }} />)}
             </Form.Item>
           </div>
