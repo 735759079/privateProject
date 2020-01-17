@@ -8,30 +8,72 @@ export default class TableContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      menstrual_id: 0,
-      menstrual_min: 0,
-      menstrual_max: 0,
-      cycle_id: 0,
-      cycle_min: 0,
-      cycle_max: 0
+      menstrual_query_arr: [],
+      cycle_query_arr: []
     };
   }
 
   changeMenstrualRangeInput = (e, record) => {
     const rangeArr = e.currentTarget.value.split("-");
+
+    let exist = false;
+    let arr_index;
+    const menstrual_query_arr = [].concat(this.state.menstrual_query_arr);
+    menstrual_query_arr.forEach((item, index) => {
+      if (item.id === record.id) {
+        arr_index = index;
+        exist = true;
+      }
+    });
+
+    if (exist) {
+      menstrual_query_arr[arr_index] = {
+        menstrual_min: rangeArr[0],
+        menstrual_max: rangeArr[1],
+        menstrual_id: record.id
+      };
+    } else {
+      menstrual_query_arr.push({
+        menstrual_min: rangeArr[0],
+        menstrual_max: rangeArr[1],
+        menstrual_id: record.id
+      });
+    }
+
     this.setState({
-      menstrual_min: rangeArr[0],
-      menstrual_max: rangeArr[1],
-      menstrual_id: record.id
+      menstrual_query_arr: [].concat(menstrual_query_arr)
     });
   };
 
   changeCycleRangeInput = (e, record) => {
     const rangeArr = e.currentTarget.value.split("-");
+
+    let exist = false;
+    let arr_index;
+    const cycle_query_arr = [].concat(this.state.cycle_query_arr);
+    cycle_query_arr.forEach((item, index) => {
+      if (item.id === record.id) {
+        arr_index = index;
+        exist = true;
+      }
+    });
+
+    if (exist) {
+      cycle_query_arr[arr_index] = {
+        cycle_min: rangeArr[0],
+        cycle_max: rangeArr[1],
+        cycle_id: record.id
+      };
+    } else {
+      cycle_query_arr.push({
+        cycle_min: rangeArr[0],
+        cycle_max: rangeArr[1],
+        cycle_id: record.id
+      });
+    }
+
     this.setState({
-      cycle_min: rangeArr[0],
-      cycle_max: rangeArr[1],
-      cycle_id: record.id
+      cycle_query_arr: [].concat(cycle_query_arr)
     });
   };
 
@@ -69,7 +111,7 @@ export default class TableContainer extends React.Component {
               return (
                 <Input
                   placeholder="请输入周期筛选范围"
-                  onChange={e => this.changeCycleRangeInput(e, record)}
+                  onBlur={e => this.changeCycleRangeInput(e, record)}
                 />
               );
             }}
@@ -83,7 +125,7 @@ export default class TableContainer extends React.Component {
               return (
                 <Input
                   placeholder="请输入经期筛选范围"
-                  onChange={e => this.changeMenstrualRangeInput(e, record)}
+                  onBlur={e => this.changeMenstrualRangeInput(e, record)}
                 />
               );
             }}
@@ -95,13 +137,24 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
-                if (record.id === this.state.cycle_id && record.cycleArr[0]) {
+                let exist = false;
+                let arr_index;
+                this.state.cycle_query_arr.forEach((item, index) => {
+                  if (item.cycle_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
+                if (exist && record.cycleArr[0]) {
                   return (
                     <span
                       className={
-                        this.state.cycle_min || this.state.cycle_max
-                          ? record.cycleArr[0] >= this.state.cycle_min &&
-                            record.cycleArr[0] <= this.state.cycle_max
+                        this.state.cycle_query_arr[arr_index].cycle_min ||
+                        this.state.cycle_query_arr[arr_index].cycle_max
+                          ? record.cycleArr[0] >=
+                              this.state.cycle_query_arr[arr_index].cycle_min &&
+                            record.cycleArr[0] <=
+                              this.state.cycle_query_arr[arr_index].cycle_max
                             ? "cycleNormal"
                             : "cycleAlert"
                           : "cycleNormal"
@@ -123,13 +176,24 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
-                if (record.id === this.state.cycle_id && record.cycleArr[1]) {
+                let exist = false;
+                let arr_index;
+                this.state.cycle_query_arr.forEach((item, index) => {
+                  if (item.cycle_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
+                if (exist && record.cycleArr[1]) {
                   return (
                     <span
                       className={
-                        this.state.cycle_min || this.state.cycle_max
-                          ? record.cycleArr[1] >= this.state.cycle_min &&
-                            record.cycleArr[1] <= this.state.cycle_max
+                        this.state.cycle_query_arr[arr_index].cycle_min ||
+                        this.state.cycle_query_arr[arr_index].cycle_max
+                          ? record.cycleArr[1] >=
+                              this.state.cycle_query_arr[arr_index].cycle_min &&
+                            record.cycleArr[1] <=
+                              this.state.cycle_query_arr[arr_index].cycle_max
                             ? "cycleNormal"
                             : "cycleAlert"
                           : "cycleNormal"
@@ -151,13 +215,24 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
-                if (record.id === this.state.cycle_id && record.cycleArr[2]) {
+                let exist = false;
+                let arr_index;
+                this.state.cycle_query_arr.forEach((item, index) => {
+                  if (item.cycle_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
+                if (exist && record.cycleArr[2]) {
                   return (
                     <span
                       className={
-                        this.state.cycle_min || this.state.cycle_max
-                          ? record.cycleArr[2] >= this.state.cycle_min &&
-                            record.cycleArr[2] <= this.state.cycle_max
+                        this.state.cycle_query_arr[arr_index].cycle_min ||
+                        this.state.cycle_query_arr[arr_index].cycle_max
+                          ? record.cycleArr[2] >=
+                              this.state.cycle_query_arr[arr_index].cycle_min &&
+                            record.cycleArr[2] <=
+                              this.state.cycle_query_arr[arr_index].cycle_max
                             ? "cycleNormal"
                             : "cycleAlert"
                           : "cycleNormal"
@@ -179,13 +254,24 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
-                if (record.id === this.state.cycle_id && record.cycleArr[3]) {
+                let exist = false;
+                let arr_index;
+                this.state.cycle_query_arr.forEach((item, index) => {
+                  if (item.cycle_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
+                if (exist && record.cycleArr[3]) {
                   return (
                     <span
                       className={
-                        this.state.cycle_min || this.state.cycle_max
-                          ? record.cycleArr[3] >= this.state.cycle_min &&
-                            record.cycleArr[3] <= this.state.cycle_max
+                        this.state.cycle_query_arr[arr_index].cycle_min ||
+                        this.state.cycle_query_arr[arr_index].cycle_max
+                          ? record.cycleArr[3] >=
+                              this.state.cycle_query_arr[arr_index].cycle_min &&
+                            record.cycleArr[3] <=
+                              this.state.cycle_query_arr[arr_index].cycle_max
                             ? "cycleNormal"
                             : "cycleAlert"
                           : "cycleNormal"
@@ -207,13 +293,24 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
-                if (record.id === this.state.cycle_id && record.cycleArr[4]) {
+                let exist = false;
+                let arr_index;
+                this.state.cycle_query_arr.forEach((item, index) => {
+                  if (item.cycle_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
+                if (exist && record.cycleArr[4]) {
                   return (
                     <span
                       className={
-                        this.state.cycle_min || this.state.cycle_max
-                          ? record.cycleArr[4] >= this.state.cycle_min &&
-                            record.cycleArr[4] <= this.state.cycle_max
+                        this.state.cycle_query_arr[arr_index].cycle_min ||
+                        this.state.cycle_query_arr[arr_index].cycle_max
+                          ? record.cycleArr[4] >=
+                              this.state.cycle_query_arr[arr_index].cycle_min &&
+                            record.cycleArr[4] <=
+                              this.state.cycle_query_arr[arr_index].cycle_max
                             ? "cycleNormal"
                             : "cycleAlert"
                           : "cycleNormal"
@@ -235,13 +332,24 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
-                if (record.id === this.state.cycle_id && record.cycleArr[5]) {
+                let exist = false;
+                let arr_index;
+                this.state.cycle_query_arr.forEach((item, index) => {
+                  if (item.cycle_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
+                if (exist && record.cycleArr[5]) {
                   return (
                     <span
                       className={
-                        this.state.cycle_min || this.state.cycle_max
-                          ? record.cycleArr[5] >= this.state.cycle_min &&
-                            record.cycleArr[5] <= this.state.cycle_max
+                        this.state.cycle_query_arr[arr_index].cycle_min ||
+                        this.state.cycle_query_arr[arr_index].cycle_max
+                          ? record.cycleArr[5] >=
+                              this.state.cycle_query_arr[arr_index].cycle_min &&
+                            record.cycleArr[5] <=
+                              this.state.cycle_query_arr[arr_index].cycle_max
                             ? "cycleNormal"
                             : "cycleAlert"
                           : "cycleNormal"
@@ -265,17 +373,25 @@ export default class TableContainer extends React.Component {
               align="center"
               key="menstrual_1"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[0]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[0] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[0] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[0] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -299,17 +415,25 @@ export default class TableContainer extends React.Component {
               align="center"
               key="menstrual_2"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[1]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[1] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[1] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[1] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -333,17 +457,25 @@ export default class TableContainer extends React.Component {
               align="center"
               key="menstrual_3"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[2]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[2] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[2] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[2] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -367,17 +499,25 @@ export default class TableContainer extends React.Component {
               align="center"
               key="menstrual_4"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[3]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[3] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[3] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[3] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -401,17 +541,25 @@ export default class TableContainer extends React.Component {
               align="center"
               key="menstrual_5"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[4]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[4] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[4] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[4] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -435,17 +583,25 @@ export default class TableContainer extends React.Component {
               align="center"
               key="menstrual_6"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[5]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[5] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[5] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[5] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
@@ -469,17 +625,25 @@ export default class TableContainer extends React.Component {
               width={60}
               align="center"
               render={(_text, record) => {
+                let exist = false;
+                let arr_index;
+                this.state.menstrual_query_arr.forEach((item, index) => {
+                  if (item.menstrual_id === record.id) {
+                    exist = true;
+                    arr_index = index;
+                  }
+                });
                 if (
-                  record.id === this.state.menstrual_id &&
+                  exist &&
                   record.menstrualArr[6]
                 ) {
                   return (
                     <span
                       className={
-                        this.state.menstrual_min || this.state.menstrual_max
+                        this.state.menstrual_query_arr[arr_index].menstrual_min || this.state.menstrual_query_arr[arr_index].menstrual_max
                           ? record.menstrualArr[6] >=
-                              this.state.menstrual_min &&
-                            record.menstrualArr[6] <= this.state.menstrual_max
+                              this.state.menstrual_query_arr[arr_index].menstrual_min &&
+                            record.menstrualArr[6] <= this.state.menstrual_query_arr[arr_index].menstrual_max
                             ? "menstrualNormal"
                             : "menstrualAlert"
                           : "menstrualNormal"
